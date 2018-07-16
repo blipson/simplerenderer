@@ -32,6 +32,8 @@ template <typename T> struct vec<2,T> {
 template <typename T> struct vec<3,T> {
     vec() : x(T()), y(T()), z(T()) {}
     vec(T X, T Y, T Z) : x(X), y(Y), z(Z) {}
+    inline vec<3, T> operator *(float f) const { return vec(x*f, y*f, z*f); }
+    inline vec<3, T> operator ^(const vec<3, T> &v) const { return vec(y*v.z-z*v.y, z*v.x-x*v.z, x*v.y-y*v.x); }
     template <class U> vec<3,T>(const vec<3,U> &v);
     T& operator[](const size_t i)       { assert(i<3); return i<=0 ? x : (1==i ? y : z); }
     const T& operator[](const size_t i) const { assert(i<3); return i<=0 ? x : (1==i ? y : z); }

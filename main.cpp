@@ -8,8 +8,8 @@ const TGAColor white = TGAColor(255, 255, 255, 255);
 const TGAColor red = TGAColor(255, 0, 0, 255);
 const TGAColor green = TGAColor(0, 255, 0, 255);
 Model *model = nullptr;
-const int width = 200;
-const int height = 200;
+const int width = 800;
+const int height = 800;
 
 Vec3f barycentric(Vec2i* pts, Vec2i p)
 {
@@ -122,12 +122,47 @@ int drawWireframe(int argc, char **argv)
     return 0;
 }
 
+int drawTriangles(int argc, char** argv)
+{
+    if (argc == 2)
+    {
+        model = new Model(argv[1]);
+    }
+    else
+    {
+        model = new Model("obj/african_head.obj");
+    }
+    TGAImage image(width, height, TGAImage::RGB);
+    Vec3f lightDir(0, 0, -1);
+    for (int i = 0; i < model->nfaces(); i++)
+    {
+        std::vector<int> face = model->face(i);
+        Vec2i screenCoords[3];
+        Vec3f worldCoords[3];
+        for (int j = 0; j < 3; j++)
+        {
+            Vec3f v = model->vert(face[j]);
+            screenCoords[j] = Vec2i((v.x + 1.0) * width / 2.0, (v.y + 1.0) * height / 2.0);
+            worldCoords[j] = v;
+        }
+        Vec3f base = worldCoords[2] - worldCoords[0];
+        Vec3f exponent = worldCoords[1] - worldCoords[0];
+        Vec3f n = Vec3f(base.y * exponent.z - base.z * exponent.y,
+                base.z * exponent.x - base.x * exponent.z,
+                base.x * exponent.y - base.y * exponent.x);
+        n.normalize();
+        float intensity = n.x * lightDir.x + n.y * lightDir.y + n.z * lightDir.z;
+        if (intensity>0) {
+            Vec2i pts[3] = { Vec2i(screenCoords[0]), Vec2i(screenCoords[1]), Vec2i(screenCoords[2]) };
+            triangle(pts, image, TGAColor(intensity*255, intensity*255, intensity*255, 255));
+        }
+    }
+    image.flip_vertically();
+    image.write_tga_file("output.tga");
+    return 0;
+}
+
 int main(int argc, char**argv)
 {
-    TGAImage frame(width, height, TGAImage::RGB);
-    Vec2i pts[3] = { Vec2i(10, 10), Vec2i(100, 30), Vec2i(190, 160) };
-    triangle(pts, frame, TGAColor(255, 0, 0));
-    frame.flip_vertically();
-    frame.write_tga_file("output.tga");
-    return 0;
+    return drawTriangles(argc, argv);
 }
