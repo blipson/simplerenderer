@@ -31,8 +31,6 @@ private:
     T data_[DIM];
 };
 
-/////////////////////////////////////////////////////////////////////////////////
-
 template<typename T>
 struct vec<2, T>
 {
@@ -60,7 +58,6 @@ struct vec<2, T>
     T x, y;
 };
 
-/////////////////////////////////////////////////////////////////////////////////
 
 template<typename T>
 struct vec<3, T>
@@ -103,8 +100,6 @@ struct vec<3, T>
 
     T x, y, z;
 };
-
-/////////////////////////////////////////////////////////////////////////////////
 
 template<size_t DIM, typename T>
 T operator*(const vec<DIM, T> &lhs, const vec<DIM, T> &rhs)
@@ -175,8 +170,6 @@ std::ostream &operator<<(std::ostream &out, vec<DIM, T> &v)
     return out;
 }
 
-/////////////////////////////////////////////////////////////////////////////////
-
 template<size_t DIM, typename T>
 struct dt
 {
@@ -196,8 +189,6 @@ struct dt<1, T>
         return src[0][0];
     }
 };
-
-/////////////////////////////////////////////////////////////////////////////////
 
 template<size_t DimRows, size_t DimCols, typename T>
 class mat
@@ -287,8 +278,6 @@ public:
     }
 };
 
-/////////////////////////////////////////////////////////////////////////////////
-
 template<size_t DimRows, size_t DimCols, typename T>
 vec<DimRows, T> operator*(const mat<DimRows, DimCols, T> &lhs, const vec<DimCols, T> &rhs)
 {
@@ -319,8 +308,6 @@ std::ostream &operator<<(std::ostream &out, mat<DimRows, DimCols, T> &m)
     for (size_t i = 0; i < DimRows; i++) out << m[i] << std::endl;
     return out;
 }
-
-/////////////////////////////////////////////////////////////////////////////////
 
 typedef vec<2, float> Vec2f;
 typedef vec<2, int> Vec2i;
