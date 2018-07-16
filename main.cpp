@@ -11,7 +11,7 @@ Model *model = nullptr;
 const int width = 800;
 const int height = 800;
 
-Vec3f barycentric(Vec2i* pts, Vec2i p)
+Vec3f barycentric(Vec2i *pts, Vec2i p)
 {
     Vec3f u = cross(Vec3f(pts[2][0] - pts[0][0], pts[1][0] - pts[0][0], pts[0][0] - p[0]),
                     Vec3f(pts[2][1] - pts[0][1], pts[1][1] - pts[0][1], pts[0][1] - p[1]));
@@ -46,7 +46,8 @@ void line(Vec2i p0, Vec2i p1, TGAImage &image, TGAColor color)
         if (steep)
         {
             image.set(y, x, color);
-        } else
+        }
+        else
         {
             image.set(x, y, color);
         }
@@ -59,7 +60,7 @@ void line(Vec2i p0, Vec2i p1, TGAImage &image, TGAColor color)
     }
 }
 
-void triangle(Vec2i* pts, TGAImage &image, TGAColor color)
+void triangle(Vec2i *pts, TGAImage &image, TGAColor color)
 {
     Vec2i bboxmin(image.get_width() - 1, image.get_height() - 1);
     Vec2i bboxmax(0, 0);
@@ -92,7 +93,8 @@ int drawWireframe(int argc, char **argv)
     if (argc == 2)
     {
         model = new Model(argv[1]);
-    } else
+    }
+    else
     {
         model = new Model("obj/african_head.obj");
     }
@@ -122,7 +124,7 @@ int drawWireframe(int argc, char **argv)
     return 0;
 }
 
-int drawTriangles(int argc, char** argv)
+int drawTriangles(int argc, char **argv)
 {
     if (argc == 2)
     {
@@ -148,13 +150,14 @@ int drawTriangles(int argc, char** argv)
         Vec3f base = worldCoords[2] - worldCoords[0];
         Vec3f exponent = worldCoords[1] - worldCoords[0];
         Vec3f n = Vec3f(base.y * exponent.z - base.z * exponent.y,
-                base.z * exponent.x - base.x * exponent.z,
-                base.x * exponent.y - base.y * exponent.x);
+                        base.z * exponent.x - base.x * exponent.z,
+                        base.x * exponent.y - base.y * exponent.x);
         n.normalize();
         float intensity = n.x * lightDir.x + n.y * lightDir.y + n.z * lightDir.z;
-        if (intensity>0) {
-            Vec2i pts[3] = { Vec2i(screenCoords[0]), Vec2i(screenCoords[1]), Vec2i(screenCoords[2]) };
-            triangle(pts, image, TGAColor(intensity*255, intensity*255, intensity*255, 255));
+        if (intensity > 0)
+        {
+            Vec2i pts[3] = {Vec2i(screenCoords[0]), Vec2i(screenCoords[1]), Vec2i(screenCoords[2])};
+            triangle(pts, image, TGAColor(intensity * 255, intensity * 255, intensity * 255, 255));
         }
     }
     image.flip_vertically();
@@ -162,7 +165,7 @@ int drawTriangles(int argc, char** argv)
     return 0;
 }
 
-int main(int argc, char**argv)
+int main(int argc, char **argv)
 {
     return drawTriangles(argc, argv);
 }
