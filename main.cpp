@@ -1,5 +1,6 @@
 #include <vector>
 #include <cmath>
+#include "geometry.h"
 #include "tgaimage.h"
 #include "model.h"
 
@@ -7,8 +8,19 @@ const TGAColor white = TGAColor(255, 255, 255, 255);
 const TGAColor red = TGAColor(255, 0, 0, 255);
 const TGAColor green = TGAColor(0, 255, 0, 255);
 Model *model = nullptr;
-const int width = 800;
-const int height = 800;
+const int width = 200;
+const int height = 200;
+
+Vec3f barycentric(Vec2i* pts, Vec2i p)
+{
+    Vec3f u = cross(Vec3f(pts[2][0] - pts[0][0], pts[1][0] - pts[0][0], pts[0][0] - p[0]),
+                    Vec3f(pts[2][1] - pts[0][1], pts[1][1] - pts[0][1], pts[0][1] - p[1]));
+    if (std::abs(u[2]) < 1)
+    {
+        return Vec3f(-1, 1, 1);
+    }
+    return Vec3f(1.f - (u.x + u.y) / u.z, u.y / u.z, u.x / u.z);
+}
 
 void line(Vec2i p0, Vec2i p1, TGAImage &image, TGAColor color)
 {
@@ -47,40 +59,30 @@ void line(Vec2i p0, Vec2i p1, TGAImage &image, TGAColor color)
     }
 }
 
-void triangle(Vec2i t0, Vec2i t1, Vec2i t2, TGAImage &image, TGAColor color)
+void triangle(Vec2i* pts, TGAImage &image, TGAColor color)
 {
-    if (t0.y == t1.y && t0.y == t2.y)
+    Vec2i bboxmin(image.get_width() - 1, image.get_height() - 1);
+    Vec2i bboxmax(0, 0);
+    Vec2i clamp(image.get_width() - 1, image.get_height() - 1);
+    for (int i = 0; i < 3; i++)
     {
-        return;
-    }
-    if (t0.y > t1.y)
-    {
-        std::swap(t0, t1);
-    }
-    if (t0.y > t2.y)
-    {
-        std::swap(t0, t2);
-    }
-    if (t1.y > t2.y)
-    {
-        std::swap(t1, t2);
-    }
-    int totalHeight = t2.y - t0.y;
-    for (int i = 0; i < totalHeight; i++)
-    {
-        bool upperHalf = i > t1.y - t0.y || t1.y == t0.y;
-        int segmentHeight = upperHalf ? t2.y - t1.y + 1 : t1.y - t0.y + 1;
-        float alpha = (float) i / totalHeight;
-        float beta = (float) (i - (upperHalf ? t1.y - t0.y : 0)) / segmentHeight;
-        Vec2i A = t0 + (t2 - t0) * alpha;
-        Vec2i B = upperHalf ? t1 + (t2 - t1) * beta : t0 + (t1 - t0) * beta;
-        if (A.x>B.x)
+        for (int j = 0; j < 2; j++)
         {
-            std::swap(A, B);
+            bboxmin[j] = std::max(0, std::min(bboxmin[j], pts[i][j]));
+            bboxmax[j] = std::min(clamp[j], std::max(bboxmax[j], pts[i][j]));
         }
-        for (int j = A.x; j <= B.x; j++)
+    }
+    Vec2i p;
+    for (p.x = bboxmin.x; p.x <= bboxmax.x; p.x++)
+    {
+        for (p.y = bboxmin.y; p.y <= bboxmax.y; p.y++)
         {
-            image.set(j, t0.y + i, color);
+            Vec3f bcScreen = barycentric(pts, p);
+            if (bcScreen.x < 0 || bcScreen.y < 0 || bcScreen.z < 0)
+            {
+                continue;
+            }
+            image.set(p.x, p.y, color);
         }
     }
 }
@@ -122,14 +124,10 @@ int drawWireframe(int argc, char **argv)
 
 int main(int argc, char**argv)
 {
-    TGAImage image(width, height, TGAImage::RGB);
-    Vec2i t0[3] = {Vec2i(10, 70), Vec2i(50, 160), Vec2i(70, 80)};
-    Vec2i t1[3] = {Vec2i(180, 50), Vec2i(150, 1), Vec2i(70, 180)};
-    Vec2i t2[3] = {Vec2i(180, 150), Vec2i(120, 160), Vec2i(130, 180)};
-    triangle(t0[0], t0[1], t0[2], image, red);
-    triangle(t1[0], t1[1], t1[2], image, white);
-    triangle(t2[0], t2[1], t2[2], image, green);
-    image.flip_vertically();
-    image.write_tga_file("output.tga");
+    TGAImage frame(width, height, TGAImage::RGB);
+    Vec2i pts[3] = { Vec2i(10, 10), Vec2i(100, 30), Vec2i(190, 160) };
+    triangle(pts, frame, TGAColor(255, 0, 0));
+    frame.flip_vertically();
+    frame.write_tga_file("output.tga");
     return 0;
 }
