@@ -4,3 +4,4 @@ cmake-build-debug
 *.o
 output.tga
 main
+.DS_Store

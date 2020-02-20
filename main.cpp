@@ -1,9 +1,10 @@
 #include "TgaImage.h"
 
 const TgaColor white = TgaColor(255, 255, 255, 255);
-const TgaColor red   = TgaColor(255, 0, 0, 255);
+const TgaColor red = TgaColor(255, 0, 0, 255);
 
-int main(int argc, char** argv) {
+int main(int argc, char **argv)
+{
     TgaImage image(100, 100, TgaImage::RGB);
     image.set(52, 41, red);
     image.set(53, 41, red);

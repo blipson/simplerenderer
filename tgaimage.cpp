@@ -240,7 +240,7 @@ bool TgaImage::loadRleData(std::ifstream &in)
             chunkHeader++;
             for (int i = 0; i < chunkHeader; i++)
             {
-                in.read((char*) colorBuffer.raw, bytesPerPixel);
+                in.read((char *) colorBuffer.raw, bytesPerPixel);
                 if (!in.good())
                 {
                     std::cerr << "an error occured while reading the header\n";
@@ -281,8 +281,7 @@ bool TgaImage::loadRleData(std::ifstream &in)
                 }
             }
         }
-    }
-    while (currentPixel < pixelCount);
+    } while (currentPixel < pixelCount);
     return true;
 }
 
@@ -323,7 +322,8 @@ bool TgaImage::writeTgaFile(const char *filename, bool rle)
             out.close();
             return false;
         }
-    } else
+    }
+    else
     {
         if (!unloadRleData(out))
         {
@@ -415,7 +415,7 @@ bool TgaImage::scale(int w, int h)
     {
         return false;
     }
-    auto* tData = new unsigned char[w * h * bytesPerPixel];
+    auto *tData = new unsigned char[w * h * bytesPerPixel];
     int nScanLine = 0;
     int oScanLine = 0;
     int yErr = 0;
@@ -449,7 +449,7 @@ bool TgaImage::scale(int w, int h)
             nScanLine += nLineBytes;
         }
     }
-    delete [] data;
+    delete[] data;
     data = tData;
     width = w;
     height = h;
