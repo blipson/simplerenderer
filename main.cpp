@@ -14,21 +14,52 @@ void line(int x0, int y0, int x1, int y1, TgaImage &image, const TgaColor &color
     int minX = std::min(x0, x1);
     int maxX = std::max(x0, x1);
 
-    if (minX == maxX)
+    if (minX == maxX || std::abs(dx) < std::abs(dy))
     {
         int minY = std::min(y0, y1);
         int maxY = std::max(y0, y1);
-        for (float y = minY; y <= maxY; y += 0.001)
+        for (int y = minY; y <= maxY; y++)
         {
-            image.set(minX, y, color);
+            int x = (y - b) / m;
+            image.set(x, y, color);
         }
     }
     else
     {
-        for (float x = minX; x <= maxX; x += 0.001)
+        for (int x = minX; x <= maxX; x++)
         {
             int y = (m * x) + b;
             image.set(x, y, color);
+        }
+    }
+}
+
+void fastLine(int x0, int y0, int x1, int y1, TgaImage &image, const TgaColor& color) {
+    bool steep = false;
+    if (std::abs(x0-x1)<std::abs(y0-y1)) {
+        std::swap(x0, y0);
+        std::swap(x1, y1);
+        steep = true;
+    }
+    if (x0>x1) {
+        std::swap(x0, x1);
+        std::swap(y0, y1);
+    }
+    int dx = x1-x0;
+    int dy = y1-y0;
+    int derror2 = std::abs(dy)*2;
+    int error2 = 0;
+    int y = y0;
+    for (int x=x0; x<=x1; x++) {
+        if (steep) {
+            image.set(y, x, color);
+        } else {
+            image.set(x, y, color);
+        }
+        error2 += derror2;
+        if (error2 > dx) {
+            y += (y1>y0?1:-1);
+            error2 -= dx*2;
         }
     }
 }
