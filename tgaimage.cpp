@@ -6,7 +6,8 @@
 #include "TgaImage.h"
 
 TgaImage::TgaImage() : data(nullptr), width(0), height(0), bytesPerPixel(0)
-{}
+{
+}
 
 TgaImage::TgaImage(int w, int h, int bpp) : data(nullptr), width(w), height(h), bytesPerPixel(bpp)
 {
@@ -95,18 +96,11 @@ bool TgaImage::flipHorizontally()
     {
         return false;
     }
-    int half = width >> 1; // bit shift by 1 to divide by 2 without having to handle rounding manually.
+    int half = width >> 1;
     for (int i = 0; i < half; i++)
     {
         for (int j = 0; j < height; j++)
         {
-            // Loop through each row, and flip the bits on the Y axis
-            // going inwards from the outside.
-            // [p1, p2, p3, p4,
-            // p5, p6, p7, p8]
-            // with width 4 and height 2 becomes
-            // [p4, p3, p2, p1,
-            //  p8, p7, p6, p5]
             TgaColor c1 = get(i, j);
             TgaColor c2 = get(width - 1 - i, j);
             set(i, j, c2);
@@ -124,16 +118,9 @@ bool TgaImage::flipVertically()
     }
     unsigned long bytes_per_line = width * bytesPerPixel;
     auto *line = new unsigned char[bytes_per_line];
-    int half = height >> 1; // bit shift by 1 to divide by 2 without having to handle rounding manually.
+    int half = height >> 1;
     for (int j = 0; j < half; j++)
     {
-        // Flip on a per-row basis, going from outside in.
-        // [p1, p2, p3, p4,
-        // p5, p6, p7, p8]
-        // with width 4 and height 2 becomes
-        // [p5, p6, p7, p8,
-        //  p1, p2, p3, p4]
-        // Use line as a temporary storage so we can swap the lines.
         unsigned long l1 = j * bytes_per_line;
         unsigned long l2 = (height - 1 - j) * bytes_per_line;
         memmove((void *) line, (void *) (data + l1), bytes_per_line);
@@ -146,11 +133,9 @@ bool TgaImage::flipVertically()
 
 bool TgaImage::readTgaFile(const char *filename)
 {
-    // Make sure data is empty before we start.
     delete[] data;
     data = nullptr;
 
-    // First, we open the file.
     std::ifstream in;
     in.open(filename, std::ios::binary);
     if (!in.is_open())
@@ -160,7 +145,6 @@ bool TgaImage::readTgaFile(const char *filename)
         return false;
     }
 
-    // Handle the header and set the appropriate fields on our class as we read them in.
     TgaHeader header;
     in.read((char *) &header, sizeof(header));
     if (!in.good())
@@ -179,7 +163,6 @@ bool TgaImage::readTgaFile(const char *filename)
         return false;
     }
 
-    // Handle the body as we read data in and allocate memory accordingly.
     unsigned long numberOfBytes = bytesPerPixel * width * height;
     data = new unsigned char[numberOfBytes];
     if (header.datatypeCode == 2 || header.datatypeCode == 3)
@@ -281,7 +264,8 @@ bool TgaImage::loadRleData(std::ifstream &in)
                 }
             }
         }
-    } while (currentPixel < pixelCount);
+    }
+    while (currentPixel < pixelCount);
     return true;
 }
 
@@ -289,8 +273,10 @@ bool TgaImage::writeTgaFile(const char *filename, bool rle)
 {
     unsigned char developer_area_ref[4] = {0, 0, 0, 0};
     unsigned char extension_area_ref[4] = {0, 0, 0, 0};
-    unsigned char footer[18] = {'T', 'R', 'U', 'E', 'V', 'I', 'S', 'I', 'O', 'N', '-', 'X', 'F', 'I', 'L', 'E', '.',
-                                '\0'};
+    unsigned char footer[18] = {
+            'T', 'R', 'U', 'E', 'V', 'I', 'S', 'I', 'O', 'N', '-', 'X', 'F', 'I', 'L', 'E', '.',
+            '\0'
+    };
     std::ofstream out;
     out.open(filename, std::ios::binary);
     if (!out.is_open())
@@ -357,7 +343,6 @@ bool TgaImage::writeTgaFile(const char *filename, bool rle)
     return true;
 }
 
-// TODO: it is not necessary to break a raw chunk for two equal pixels (for the matter of the resulting size)
 bool TgaImage::unloadRleData(std::ofstream &out)
 {
     const unsigned char maxChunkLength = 128;

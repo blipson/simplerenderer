@@ -24,10 +24,6 @@ struct TgaHeader
 
 struct TgaColor
 {
-    // This union is to make it so you can either do 4 defined chars,
-    // or send 4 raw chars,
-    // or simply define a single int value
-    // all in the same field without allocating more memory than necessary
     union
     {
         struct
