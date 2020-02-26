@@ -2,6 +2,12 @@
 CMakeLists.txt
 cmake-build-debug
 *.o
-output.tga
+output/output.tga
 main
 .DS_Store
+target*
+input/target*
+output/target*
+pumpkin*
+input/pumpkin*
+output/pumpkin*

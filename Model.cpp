@@ -7,6 +7,44 @@
 
 Model::Model(const char *filename) : verts(), faces()
 {
+//    FILE* file = fopen(filename, "r");
+//    if (file == nullptr)
+//    {
+//        std::cerr << "Error opening the file!" << std::endl;
+//        return;
+//    }
+//    while (true)
+//    {
+//        char lineHeader[128];
+//        char trash;
+//        std::istringstream iss(lineHeader);
+//        int res = fscanf(file, "%s", lineHeader);
+//        if (res == EOF)
+//        {
+//            break;
+//        }
+//        if (strcmp(lineHeader, "v") == 0)
+//        {
+//            Vec3f vertex;
+//            fscanf(file, "%f %f %f\n", &vertex.x, &vertex.y, &vertex.z);
+//            verts.push_back(vertex);
+//        }
+//        else if (strcmp(lineHeader, "f") == 0)
+//        {
+//            std::vector<int> f;
+//            int itrash, idx;
+//            iss >> trash;
+//            while (iss >> idx >> trash >> itrash >> trash >> itrash)
+//            {
+//                idx--; // in wavefront obj all indices start at 1, not zero
+//                f.push_back(idx);
+//            }
+//            faces.push_back(f); // if it's a face then read in the raw face data, ignoring the slashes between values, and add it to our faces list
+//        }
+//    }
+
+
+
     // open the file and read the lines
     std::ifstream in;
     in.open(filename, std::ifstream::in);
