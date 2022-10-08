@@ -69,8 +69,16 @@ void digitalDifferentialAnalyzerLine(int x0, int y0, int x1, int y1, TgaImage &i
 
 void bresenhamLine(int x0, int y0, int x1, int y1, TgaImage &image, const TgaColor &color)
 {
+    float initialDx, initialDy;
+
+    initialDx = float(x1 - x0);
+    initialDy = float(y1 - y0);
+
+    float absInitialDx = abs(initialDx);
+    float absInitialDy = abs(initialDy);
+
     bool steep = false;
-    if (std::abs(x0 - x1) < std::abs(y0 - y1))
+    if (absInitialDx < absInitialDy)
     {
         std::swap(x0, y0);
         std::swap(x1, y1);
@@ -238,12 +246,12 @@ int main(int argc, char **argv)
             int y0 = (v0.y + 1) * height / 2;
             int x1 = (v1.x + 1) * width / 2;
             int y1 = (v1.y + 1) * height / 2;
-            xiaolinWuLine(x0, y0, x1, y1, image, white);
+            bresenhamLine(x0, y0, x1, y1, image, white);
         }
     }
 
     image.flipVertically(); // i want to have the origin at the left bottom corner of the image
-    image.writeTgaFile("output/testx.tga");
+    image.writeTgaFile("output/testxerino.tga");
     delete model;
     return 0;
 
